@@ -1,148 +1,575 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My3's Kitchen Menu</title>
-    <style>
-        /* General Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My3’s Kitchen Menu</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #fff8f0, #fdf2e9);
-            color: #333;
-            padding: 20px;
-        }
+  <style>
+    /* ------------------------------
+       RESET & BASE
+    -------------------------------*/
+    *, *::before, *::after { box-sizing: border-box; }
+    :root{
+      --bg-0: #0e0d10;          /* page background */
+      --bg-1: #17161c;          /* card background */
+      --bg-2: #1f1e25;          /* surfaces */
+      --text: #f4efe9;          /* main text */
+      --muted: #cfc6ba;         /* secondary text */
+      --accent: #ffbf00;        /* gold */
+      --accent-2: #ff4d4d;      /* warm red */
+      --accent-3: #8d5cff;      /* purple */
+      --divider: rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.45);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --maxw: 1080px;
+      --topnav-h: 56px;         /* top navigation height */
+      --section-header-h: 52px; /* sticky section header height */
+    }
 
-        /* Header */
-        h1 {
-            text-align: center;
-            color: #b22222;
-            font-size: 3rem;
-            margin-bottom: 20px;
-            font-weight: bold;
-            text-shadow: 2px 2px #f0e6e6;
-        }
+    html { scroll-behavior: smooth; }
+    body{
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1600px 600px at 10% 0%, #221a1a40, transparent 55%),
+                  radial-gradient(1200px 500px at 120% 20%, #1d133840, transparent 55%),
+                  var(--bg-0);
+      line-height: 1.55;
+      padding-bottom: 60px;
+      min-height: 100vh;
+    }
+    a{ color: inherit; text-decoration: none; }
 
-        /* Section Titles */
-        h2, h3 {
-            color: #b22222;
-            margin-top: 30px;
-            font-size: 1.8rem;
-            border-bottom: 3px solid #b22222;
-            padding-bottom: 8px;
-        }
+    /* Anchor scrolling should stop below sticky bars */
+    section[id]{
+      scroll-margin-top: calc(var(--topnav-h) + var(--section-header-h) + 12px);
+    }
 
-        /* Menu Container */
-        .menu-section {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 800px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+    /* ------------------------------
+       STICKY NAV (with custom logo)
+    -------------------------------*/
+    .topnav{
+      position: sticky; top: 0; z-index: 100;
+      height: var(--topnav-h);
+      display: flex; align-items: center;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(to bottom, rgba(23,22,28,.85), rgba(23,22,28,.55));
+      border-bottom: 1px solid var(--divider);
+    }
+    .nav-inner{
+      max-width: var(--maxw); margin: 0 auto;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 .75rem; width: 100%;
+    }
 
-        /* Menu Items */
-        ul {
-            list-style: none;
-            margin-top: 15px;
-        }
+    /* LOGO AREA */
+    .logo{
+      display: flex; align-items: center; gap: .6rem;
+    }
+    /* 🔁 Replace the src of .logo-img with your file: my3-logo.png */
+    .logo-img{
+      width: 34px; height: 34px; object-fit: cover;
+      border-radius: 8px; /* turn this off if your logo is not square */
+      box-shadow: 0 4px 10px rgba(0,0,0,.35);
+    }
+    .logo-text{
+      display: flex; flex-direction: column; line-height: 1.05;
+      font-weight: 900; letter-spacing: .3px;
+    }
+    .logo-text .name-line1{
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1rem;
+    }
+    .logo-text .name-line2{
+      background: linear-gradient(90deg, var(--accent), var(--accent-3));
+      -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1rem;
+    }
 
-        ul li {
-            font-size: 1.1rem;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-        }
+    .nav-links{ margin-left: auto; display: flex; gap: .5rem; flex-wrap: wrap; }
+    .nav-link{
+      padding: .45rem .7rem; border-radius: 999px; color: var(--muted);
+      border: 1px solid transparent; font-weight: 600; font-size: .95rem;
+    }
+    .nav-link.active, .nav-link:hover{
+      color: var(--text);
+      border-color: var(--divider);
+      background: linear-gradient(180deg, #292733, #23212b);
+    }
 
-        ul li:last-child {
-            border-bottom: none;
-        }
+    /* ------------------------------
+       HERO (Rocking Header)
+    -------------------------------*/
+    .hero{
+      position: relative; max-width: var(--maxw); margin: 14px auto 8px;
+      padding: clamp(28px, 6vw, 56px) clamp(14px, 3vw, 24px);
+      border-radius: var(--radius-lg);
+      overflow: clip; /* clip corners without scroll issues */
+      background:
+        radial-gradient(900px 300px at 10% 15%, rgba(255,255,255,.08), transparent 60%),
+        linear-gradient(135deg, #1a1a1f 0%, #2b0f0f 50%, #140b27 100%);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--divider);
+    }
+    .hero::before{
+      content:""; position:absolute; inset:0; pointer-events:none; opacity:.25; mix-blend-mode:soft-light;
+      background-image:
+        url("data:image/svg+xml;utf8,\
+        <svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'>\
+        <filter id='n'>\
+        <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='1' stitchTiles='stitch'/>\
+        <feColorMatrix type='saturate' values='0'/>\
+        <feComponentTransfer><feFuncA type='table' tableValues='0 0.035'/></feComponentTransfer>\
+        </filter>\
+        <rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+    .hero-slash{
+      content:""; position:absolute; right:-120px; top:-30px; width: 480px; height: 160px; transform: rotate(-12deg);
+      background:
+        linear-gradient(90deg, rgba(255, 77, 77, 0.25), rgba(255, 77, 77, 0)),
+        linear-gradient(90deg, rgba(255, 200, 0, 0.18), rgba(255, 200, 0, 0));
+      filter: blur(1px);
+    }
+    .hero-inner{ position: relative; z-index: 1; text-align: center; }
+    .brand-mark{ font-size: 44px; margin-bottom: .35rem; }
+    .hero-title{
+      margin: 0; font-weight: 900; font-size: clamp(2.1rem, 6vw, 3.8rem); letter-spacing: .5px;
+      background: linear-gradient(90deg, #ff4d4d, #ffbf00, #e74cff, #4dd2ff);
+      background-size: 300% 100%;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: titleFlow 9s ease-in-out infinite;
+      text-shadow: 0 0 10px rgba(255, 90, 90, 0.35), 0 0 24px rgba(255, 180, 0, 0.18);
+    }
+    @keyframes titleFlow{
+      0% { background-position: 0% 50%; }
+      50%{ background-position: 100% 50%; }
+      100%{ background-position: 0% 50%; }
+    }
+    .hero-tagline{
+      color: var(--muted); margin-top: .35rem; font-size: clamp(.95rem, 2.6vw, 1.1rem);
+      display: inline-block; padding: 6px 10px; position: relative;
+    }
+    .hero-tagline::after{
+      content:""; position:absolute; left:10%; right:10%; bottom: -6px; height:2px;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      box-shadow: 0 0 8px rgba(255,77,77,.5);
+    }
 
-        /* Price Styling */
-        ul li span {
-            font-weight: bold;
-            color: #b22222;
-        }
+    /* ------------------------------
+       FILTER BOXES (custom boxes)
+    -------------------------------*/
+    .filters{
+      max-width: var(--maxw); margin: 0 auto 12px; padding: 0 .75rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: .6rem;
+    }
+    .filter-card{
+      display: flex; align-items: center; gap: .6rem;
+      padding: .7rem .9rem; border-radius: 12px; cursor: pointer;
+      background: linear-gradient(180deg, #23212b, #1b1a21);
+      border: 1px solid var(--divider);
+      color: var(--muted);
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+      user-select: none;
+    }
+    .filter-card:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.14); color: var(--text); }
+    .filter-card.active{
+      background: linear-gradient(180deg, #2c2a35, #24222d);
+      color: var(--text);
+      border-color: rgba(255,255,255,.18);
+      box-shadow: 0 8px 18px rgba(0,0,0,.25);
+    }
+    .filter-emoji{ font-size: 1.25rem; }
+    .filter-label{ font-weight: 700; letter-spacing: .2px; }
 
-        /* Hover Effect */
-        ul li:hover {
-            background-color: #fdf2e9;
-            transition: 0.3s;
-        }
-    </style>
+    /* ------------------------------
+       CONTAINER & SECTION
+    -------------------------------*/
+    .container{ max-width: var(--maxw); margin: 0 auto; padding: 0 .75rem 2.25rem; }
+
+    .section{
+      margin-top: 1.5rem;
+      background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-lg);
+      overflow: clip;
+      box-shadow: var(--shadow);
+    }
+
+    /* Sticky section header */
+    .section-header{
+      height: var(--section-header-h);
+      display: flex; align-items: center; gap: .75rem;
+      padding: 0 1rem;
+      border-bottom: 1px solid var(--divider);
+      background: linear-gradient(180deg, #23212b, #1b1a21);
+      position: sticky;
+      top: var(--topnav-h);
+      z-index: 5;
+    }
+    .section-title{
+      margin: 0; font-size: 1.35rem; letter-spacing: .3px;
+      display: flex; align-items: center; gap: .5rem; font-weight: 800;
+    }
+
+    /* ------------------------------
+       GRID CARDS
+    -------------------------------*/
+    .grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: .75rem; padding: 1rem;
+    }
+    .card{
+      background: #222029;
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-md);
+      padding: .85rem .9rem;
+      display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      background: #282633;
+      border-color: rgba(255,255,255,.14);
+    }
+    .item-name{ font-weight: 700; color: var(--text); }
+    .muted{ color: var(--muted); font-size: .95rem; }
+    .price{
+      padding: .25rem .6rem; border-radius: 999px;
+      background: linear-gradient(180deg, #3a2a1a, #2b2218);
+      color: #ffd98a; font-weight: 800; letter-spacing: .2px; white-space: nowrap;
+      border: 1px solid rgba(255,191,0,.35);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    /* Utility */
+    .hidden{ display: none !important; }
+
+    /* ------------------------------
+       FOOTER
+    -------------------------------*/
+    .footer{
+      max-width: var(--maxw); margin: 2rem auto 2rem;
+      color: var(--muted); text-align: center; font-size: .95rem;
+      border-top: 1px dashed var(--divider); padding-top: 1rem;
+    }
+
+    /* Responsive niceties */
+    @media (max-width: 640px){
+      .nav-links{ display:none; } /* simplify top bar on small screens */
+      .filters{ grid-template-columns: repeat(2, 1fr); } /* smaller boxes on mobile */
+    }
+  </style>
 </head>
 <body>
 
-<h1>🍽️ My3's Kitchen Menu</h1>
+  <!-- Sticky Top Navigation -->
+  <nav class="topnav">
+    <div class="nav-inner">
+      <div class="logo">
+        <!-- 🔁 Replace src with your logo file -->
+        <img class="logo-img" src="my3-logo.png" alt="My3’s Kitchen Logo">
+        <div class="logo-text">
+          <span class="name-line1">My3’s</span>
+          <span class="name-line2">Kitchen</span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <!-- Correct anchor links (optional quick jumps) -->
+      </div>
+    </div>
+  </nav>
 
-<div class="menu-section">
-    <h2>🍛 Afternoon Menu</h2>
-</div>
+  <!-- Rocking Hero Header -->
+  <header class="hero">
+    <div class="hero-slash"></div>
+    <div class="hero-inner">
+      <div class="brand-mark">🎸</div>
+      <h1 class="hero-title">My3’s Kitchen</h1>
+      <p class="hero-tagline">Serving flavors that hit like a power chord</p>
+    </div>
+  </header>
 
-<div class="menu-section">
-    <h2>🥦 Veg Curries</h2>
-    <ul>
-        <li>Mixed Vegetable Curry <span>₹50</span></li>
-        <li>Paneer Butter Masala <span>₹50</span></li>
-        <li>Potato Masala Curry <span>₹30</span></li>
-        <li>Potato Fry <span>₹30</span></li>
-        <li>Brinjal Curry <span>₹30</span></li>
-        <!-- Add remaining items similarly -->
-    </ul>
-</div>
+  <!-- FILTER BOXES -->
+  <div class="filters" id="filters">
+    <div class="filter-card active" data-filter="all" role="button" aria-pressed="true">
+      <span class="filter-emoji">✨</span><span class="filter-label">All</span>
+    </div>
+    <div class="filter-card" data-filter="veg" role="button" aria-pressed="false">
+      <span class="filter-emoji">🥦</span><span class="filter-label">Veg</span>
+    </div>
+    <div class="filter-card" data-filter="nonveg" role="button" aria-pressed="false">
+      <span class="filter-emoji">🍗</span><span class="filter-label">Non‑Veg</span>
+    </div>
+    <div class="filter-card" data-filter="chinese" role="button" aria-pressed="false">
+      <span class="filter-emoji">🥢</span><span class="filter-label">Chinese</span>
+    </div>
+    <div class="filter-card" data-filter="vegmeals" role="button" aria-pressed="false">
+      <span class="filter-emoji">🥗</span><span class="filter-label">Veg Meals</span>
+    </div>
+    <div class="filter-card" data-filter="nonvegmeals" role="button" aria-pressed="false">
+      <span class="filter-emoji">🍽️</span><span class="filter-label">Non‑Veg Meals</span>
+    </div>
+  </div>
 
-<div class="menu-section">
-    <h2>🍗 Non-Veg Curries</h2>
-    <ul>
-        <li>Chicken Curry <span>₹100</span></li>
-        <li>Chicken Fry <span>₹120</span></li>
-        <li>Chicken Botti <span>₹70</span></li>
-        <li>Boiled Egg Masala <span>₹40</span></li>
-        <li>Egg Bhurji <span>₹30</span></li>
-    </ul>
-</div>
+  <main class="container">
 
-<div class="menu-section">
-    <h2>🥢 Chinese Starters</h2>
-    <ul>
-        <li>Veg Manchurian <span>₹80</span></li>
-        <li>Veg Noodles <span>₹80</span></li>
-        <li>Chicken Manchurian <span>₹120</span></li>
-        <li>Chicken Fried Rice <span>₹120</span></li>
-    </ul>
-</div>
+    <!-- Afternoon Menu -->
+    <section class="section" id="afternoon" data-category="afternoon">
+      <div class="section-header">
+        <h2 class="section-title">🍛 Afternoon Menu</h2>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div>
+            <div class="item-name">Available Today</div>
+            <div class="muted">Ask for specials & combos</div>
+          </div>
+          <span class="price">Chef’s pick</span>
+        </div>
+      </div>
+    </section>
 
-<div class="menu-section">
-    <h3>Veg Meals</h3>
-    <ul>
-        <li>Veg Meals - Half <span>₹80</span></li>
-        <li>Veg Meals - Full <span>₹100</span></li>
-        <li>Dal Rice <span>₹50</span></li>
-        <li>Sambar Rice <span>₹50</span></li>
-        <li>Bagara Dal <span>₹70</span></li>
-    </ul>
-</div>
+    <!-- Veg Curries -->
+    <section class="section" id="veg" data-category="veg">
+      <div class="section-header">
+        <h2 class="section-title">🥦 Veg Curries</h2>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="item-name">Mixed Vegetable Curry</div><span class="price">₹50</span></div>
+        <div class="card"><div class="item-name">Paneer Butter Masala</div><span class="price">₹50</span></div>
+        <div class="card"><div class="item-name">Potato Masala Curry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Potato Fry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Brinjal Curry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Cabbage Curry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Ladies finger Curry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Ladies finger fry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Leafy‑Papu Curry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Sambar</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Chutney</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Oiled‑Fry Onion/Cabbage/Bittergourd</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Mushroom masala Gravy Curry</div><span class="price">₹50</span></div>
+        <div class="card"><div class="item-name">Taro root (Chamagadda)</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Cauliflower curry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Tomato curry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Ridge Gourd Curry</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Bottle Gourd</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Ivy Gourd (Dondakaya)</div><span class="price">₹30</span></div>
+        <div class="card"><div class="item-name">Chapathi <span class="muted">per piece</span></div><span class="price">₹15</span></div>
+      </div>
+    </section>
 
-<div class="menu-section">
-    <h3>Non-Veg Meals</h3>
-    <ul>
-        <li>Bagara Rice + Chicken Curry <span>₹120</span></li>
-        <li>Bagara Rice + Chicken Fry <span>₹150</span></li>
-        <li>Bagara Rice + Chicken Botti <span>₹120</span></li>
-        <li>Chicken Biryani <span>₹130</span></li>
-        <li>Chicken 65 Biryani <span>₹150</span></li>
-    </ul>
-</div>
+    <!-- Non-Veg Curries -->
+    <section class="section" id="nonveg" data-category="nonveg">
+      <div class="section-header">
+        <h2 class="section-title">🍗 Non‑Veg Curries</h2>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="item-name">Chicken Curry</div><span class="price">₹100</span></div>
+        <div class="card"><div class="item-name">Chicken Fry</div><span class="price">₹120</span></div>
+        <div class="card"><div class="item-name">Botti</div><span class="price">₹70</span></div>
+        <div class="card"><div class="item-name">Boiled Egg Masala</div><span class="price">₹40</span></div>
+        <div class="card"><div class="item-name">Egg Bhurji</div><span class="price">₹30</span></div>
+      </div>
+    </section>
 
+    <!-- Chinese Starters -->
+    <section class="section" id="chinese" data-category="chinese">
+      <div class="section-header">
+        <h2 class="section-title">🥢 Chinese Starters</h2>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="item-name">Veg Manchurian</div><span class="price">₹80</span></div>
+        <div class="card"><div class="item-name">Veg Noodles</div><span class="price">₹80</span></div>
+        <div class="card"><div class="item-name">Chicken Manchurian</div><span class="price">₹120</span></div>
+        <div class="card"><div class="item-name">Chicken Fried Rice</div><span class="price">₹120</span></div>
+      </div>
+    </section>
+
+    <!-- Veg Meals -->
+    <section class="section" id="vegmeals" data-category="vegmeals">
+      <div class="section-header">
+        <h2 class="section-title">🥗 Veg Meals</h2>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="item-name">Veg Meals – Half</div><span class="price">₹80</span></div>
+        <div class="card"><div class="item-name">Veg Meals – Full</div><span class="price">₹100</span></div>
+        <div class="card"><div class="item-name">Dal Rice</div><span class="price">₹50</span></div>
+        <div class="card"><div class="item-name">Sambar Rice</div><span class="price">₹50</span></div>
+        <div class="card"><div class="item-name">Bagara Dal</div><span class="price">₹70</span></div>
+      </div>
+    </section>
+
+    <!-- Non-Veg Meals -->
+    <section class="section" id="nonvegmeals" data-category="nonvegmeals">
+      <div class="section-header">
+        <h2 class="section-title">🍽️ Non‑Veg Meals</h2>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="item-name">Bagara Rice + Chicken Curry</div><span class="price">₹120</span></div>
+        <div class="card"><div class="item-name">Bagara Rice + Chicken Fry</div><span class="price">₹150</span></div>
+        <div class="card"><div class="item-name">Bagara Rice + Botti</div><span class="price">₹120</span></div>
+        <div class="card"><div class="item-name">Chicken Biryani</div><span class="price">₹130</span></div>
+        <div class="card"><div class="item-name">Chicken 65 Biryani</div><span class="price">₹150</span></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    © <span id="year"></span> My3’s Kitchen · Hyderabad · Call/WhatsApp: <strong>+91‑9542257796</strong>
+  </footer>
+
+  <script>
+    // Current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ----- FILTER LOGIC -----
+    const filterCards = Array.from(document.querySelectorAll('.filter-card'));
+    const sections = Array.from(document.querySelectorAll('section[data-category]'));
+
+    const filterMap = {
+      all: ['afternoon','veg','nonveg','chinese','vegmeals','nonvegmeals'],
+      veg: ['veg'],
+      nonveg: ['nonveg'],
+      chinese: ['chinese'],
+      vegmeals: ['vegmeals'],
+      nonvegmeals: ['nonvegmeals']
+    };
+
+    function applyFilter(key){
+      const showIds = filterMap[key] || filterMap.all;
+      sections.forEach(sec => {
+        sec.classList.toggle('hidden', !showIds.includes(sec.id));
+      });
+      // Scroll to first visible section for a smooth experience
+      const firstVisible = document.getElementById(showIds[0]);
+      if (firstVisible) firstVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Update ARIA + active state
+      filterCards.forEach(card => {
+        const active = card.dataset.filter === key;
+        card.classList.toggle('active', active);
+        card.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    filterCards.forEach(card => {
+      card.addEventListener('click', () => applyFilter(card.dataset.filter));
+      // Keyboard accessibility
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); applyFilter(card.dataset.filter); }
+      });
+      card.setAttribute('tabindex', '0');
+    });
+
+    // Optional: If you want nav links to keep working when "All" filter is active.
+    const navLinks = Array.from(document.querySelectorAll('.nav-link'));
+    navLinks.forEach(a => a.addEventListener('click', () => applyFilter('all')));
+  </script>
 </body>
 </html>
+
+
+
+<section class="section" id="events" data-category="events">
+  <div class="section-header">
+    <h2 class="section-title"><span class="emoji">🎉</span> Party Orders & Event Management</h2>
+  </div>
+
+  <!-- Event Types -->
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>Birthday Parties <span class="badge">Kids & Adults</span></h4>
+      <div class="desc">Theme menus, cupcakes, return‑gifts coordination.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Corporate Events</h4>
+      <div class="desc">Town halls, offsites, team lunches, launches, trainings.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Housewarming (Griha Pravesh)</h4>
+      <div class="desc">Traditional veg menus, live counter options.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Baby Shower / Namakaranam</h4>
+      <div class="desc">Custom festive platters & sweets.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Engagement / Sangeet / Pre‑Wedding</h4>
+      <div class="desc">Buffet or plated service, mocktails, desserts.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Weddings & Receptions</h4>
+      <div class="desc">Large‑scale catering with multi‑cuisine spreads.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Community / Society Events</h4>
+      <div class="desc">Apartment gatherings, festival stalls, mela counters.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Festive Catering</h4>
+      <div class="desc">Holi • Diwali • Sankranti • Ugadi specials.</div>
+    </div>
+    <div class="feature-card">
+      <h4>High‑Tea & Hi‑Tea</h4>
+      <div class="desc">Mini snacks, sandwiches, bakes & beverages.</div>
+    </div>
+    <div class="feature-card">
+      <h4>School / College Events</h4>
+      <div class="desc">Annual days, sports meets, cultural fests.</div>
+    </div>
+  </div>
+
+  <!-- Services / Add‑Ons -->
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>Live Counters</h4>
+      <div class="desc">Dosa • Pav Bhaji • Chaat • Pasta • BBQ (veg/non‑veg).</div>
+    </div>
+    <div class="feature-card">
+      <h4>Buffet Setup</h4>
+      <div class="desc">Tables, warmers, chafers, display labels, service ware.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Serving Staff</h4>
+      <div class="desc">Uniformed servers, supervisors & stewards.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Decor & Lighting</h4>
+      <div class="desc">Backdrops, balloons, floral & ambient lighting.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Audio / Emcee</h4>
+      <div class="desc">PA system, music, anchors, games & activities.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Plates & Cutlery</h4>
+      <div class="desc">Disposable or eco‑friendly options available.</div>
+    </div>
+    <div class="feature-card">
+      <h4>Logistics</h4>
+      <div class="desc">Transport, setup & teardown covered end‑to‑end.</div>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="cta-row">
+    <a class="btn btn-primary"
+       target="_blank"
+       href="https://wa.me/91XXXXXXXXXX?text=Hi%20My3%E2%80%99s%20Kitchen%2C%20I%E2%80%99d%20like%20a%20quote%20for%20an%20event.%20Date%3A%20__%2C%20Guests%3A%20__%2C%20Veg%2FNon‑Veg%3A%20__">
+      💬 WhatsApp a Quote
+    </a>
+    <a class="btn btn-ghost" href="tel:+919542257796">📞 Call Us</a>
+    <a class="btn btn-ghost" href="mailto:orders@my3skitchen.com?subject=Event%20Catering%20Enquiry">✉️ Email Enquiry</a>
+  </div>
+</section>
+
+
 
 
 
